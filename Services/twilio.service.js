@@ -1,9 +1,8 @@
 // File: twilioService.js
 
-import twilio from 'twilio';
-import dotenv from 'dotenv';
+import twilio from "twilio";
+import dotenv from "dotenv";
 import sgMail from "@sendgrid/mail";
-
 
 dotenv.config();
 // Twilio configuration
@@ -12,9 +11,8 @@ const authToken = process.env.ACCOUNT_AUTH;
 const client = twilio(accountSid, authToken);
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-
-const twilioPhoneNumber = 'whatsapp:+14155238886';
-const twilioSMSNumber = '+447380300545';
+const twilioPhoneNumber = "whatsapp:+14155238886";
+const twilioSMSNumber = "+447380300545";
 const twilioVendorEmail = "neeraj.kumar@catura.co.uk";
 
 export const sendWhatsAppMessage = async (to, content, contentLink) => {
@@ -35,11 +33,10 @@ export const sendWhatsAppMessage = async (to, content, contentLink) => {
     console.log(`Message sent successfully. SID: ${message.sid}`);
     return { messageSid: message.sid, accountSid: accountSid };
   } catch (error) {
-    console.error('Error sending WhatsApp message:', error);
+    console.error("Error sending WhatsApp message:", error);
     throw error;
   }
 };
-
 
 export const sendSMSMessage = async (to, content, contentLink) => {
   console.log(`twilioPhone : ${twilioSMSNumber} , to : ${to}`);
@@ -77,7 +74,8 @@ export const sendEmailMessage = async (
     .join("");
 
   // Conditionally create the file section HTML
-  const fileSectionHtml = contentLinkToSend ? `
+  const fileSectionHtml = contentLinkToSend
+    ? `
     <br>
     <hr>
     <br>
@@ -88,12 +86,15 @@ export const sendEmailMessage = async (
           <img src="${contentLinkToSend}" alt="Media Preview" style="max-width: 100px; height: auto;">
         </div>
         <div>
-          <p style="margin-bottom: 5px;"><strong>File Name:</strong> ${extractFileName(contentLinkToSend)}</p>
+          <p style="margin-bottom: 5px;"><strong>File Name:</strong> ${extractFileName(
+            contentLinkToSend
+          )}</p>
           <p><a href="${contentLinkToSend}">View Media</a></p>
         </div>
       </div>
     </div>
-  ` : '';
+  `
+    : "";
 
   const msg = {
     to,

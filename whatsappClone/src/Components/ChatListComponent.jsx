@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-
 import {
   ListItem,
   ListItemText,
@@ -116,8 +115,8 @@ const ChatListComponent = () => {
     () =>
       sortedUsers.filter(
         (user) =>
-          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.caseId.toLowerCase().includes(searchTerm.toLowerCase())
+          (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (user.caseId && user.caseId.toLowerCase().includes(searchTerm.toLowerCase()))
       ),
     [sortedUsers, searchTerm]
   );

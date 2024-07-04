@@ -3,10 +3,11 @@
 This document provides a detailed explanation of the message sending process in our chat application, including encryption steps, function names, and file interactions.
 
 ## 1. Select Active Service
+**File:** `toolbar.jsx` --> 
 **File:** `ChatContext.jsx`
 **Function:** `handleServiceChange`
 
-The user selects the active service (default is WhatsApp, other options include SMS and email). This value is used throughout the message sending process to determine which service to use.
+The user selects the active service in UI code toolbar.jsx (default is WhatsApp, other options include SMS and email). This value is used throughout the message sending process to determine which service to use.
 
 ## 2. Write Message
 **File:** `InputField.jsx`

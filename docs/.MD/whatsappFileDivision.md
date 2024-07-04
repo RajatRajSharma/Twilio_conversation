@@ -5,22 +5,22 @@
 whatsappClone
 |- src
 |- Context
-| |- ChatContext.jsx
+|     |- ChatContext.jsx
 |- Components
-|- ChatListComponent.jsx
-|- MessageContent.jsx
-|- MessageList.jsx
-|- WhatsappClone.jsx
-|- LegacyContent
-| |- Legacy_whatsapp.jsx
-|- Styles
-| |- StyledComponent.jsx
-|- Shared
-|- ExpandedMedia.jsx
-|- InputField.jsx
-|- SearchBarComponent.jsx
-|- toolbar.jsx
-json```
+      |- ChatListComponent.jsx
+      |- MessageContent.jsx
+      |- MessageList.jsx
+      |- WhatsappClone.jsx
+      |- LegacyContent
+      |     |- Legacy_whatsapp.jsx
+      |- Styles
+      |     |- StyledComponent.jsx
+      |- Shared
+      |- ExpandedMedia.jsx
+      |- InputField.jsx
+      |- SearchBarComponent.jsx
+      |- toolbar.jsx
+```json
 
 
 ## File Explanations

@@ -1,0 +1,28 @@
+@startuml
+title Message Sending
+
+actor User
+participant "InputField.jsx" as IF
+participant "ChatContext.jsx" as CC
+participant "Azure Storage" as AS
+participant "sendMessage (user.controller.js)" as UCC
+participant "twilio.service.js" as TS
+participant "Azure Cosmos DB" as ADB
+
+User -> IF: Write message
+User -> CC: Select file (handleFileSelect)
+CC -> AS: Upload file (uploadToBlob)
+AS -> CC: Return URL
+User -> CC: Select activeService (handleServiceChange)
+CC -> CC: JSON = message + URL + activeService (sendMessage) 
+CC -> UCC: Send JSON message (sendMessage)
+UCC -> UCC: Get activeService
+UCC -> TS: Call appropriate function based on activeService
+TS -> User: Format message  -->  Send message via Twilio  (sendWhatsAppMessage  /  sendSMSMessage  /  sendEmailMessage)
+TS -> UCC: Return status
+UCC -> ADB: Finds conversation -> Save message correct [] based on activeService
+ADB -> UCC: Return status
+UCC -> CC: Update Chat UI with message ( MessageList.jsx )
+CC -> User: Seen by User
+
+@enduml

@@ -1,0 +1,31 @@
+@startuml
+title Message Receiving Flow
+
+actor User
+participant "Real Applications\n(WhatsApp, SMS, Email)" as RA
+participant "Twilio (WhatsApp/SMS)\nSendGrid (Email)" as Vendor
+participant "Function App Service\n(MessengingServicesApp)" as FAS
+participant "TwilioMessage" as TM
+participant "TwilioSMS" as TSMS
+participant "TwilioMail" as TMail
+participant "whatsappmessage queue" as Queue
+participant "queue.service.js" as QS
+participant "Azure Cosmos DB" as ADB
+participant "MessageContent.jsx" as MC
+
+User -> RA: Send message
+RA -> Vendor: Handle incoming message
+Vendor -> FAS: Forward to Function App
+FAS -> TM: Convert to required schema (WhatsApp)
+FAS -> TSMS: Convert to required schema (SMS)
+FAS -> TMail: Convert to required schema (Email)
+TM -> Queue: Add message to queue
+TSMS -> Queue: Add message to queue
+TMail -> Queue: Add message to queue
+Queue -> QS: Listen for new message
+QS -> ADB: Add message to database
+ADB -> QS: Return status
+QS -> MC: Send message to UI
+MC -> User: Display message in real time
+
+@enduml

@@ -1,7 +1,7 @@
 # WhatsApp Clone Project
 
 ## File Structure
-```json
+```
 whatsappClone
 |- src
 |- Context
@@ -20,7 +20,7 @@ whatsappClone
       |- InputField.jsx
       |- SearchBarComponent.jsx
       |- toolbar.jsx
-```json
+```
 
 
 ## File Explanations

@@ -13,7 +13,7 @@ User -> IF: Write message
 User -> CC: Select file (handleFileSelect)
 CC -> AS: Upload file (uploadToBlob)
 AS -> CC: Return URL
-User -> CC: Select activeService (handleServiceChange)
+User -> CC: Select activeService in toolbar.jsx -> (handleServiceChange)
 CC -> CC: JSON = message + URL + activeService (sendMessage) 
 CC -> UCC: Send JSON message (sendMessage)
 UCC -> UCC: Get activeService

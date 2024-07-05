@@ -1,0 +1,21 @@
+@startuml
+
+actor User
+entity ChatContext as CC
+entity ChatGPTAPI as CGAPI
+entity InputField as IF
+entity UI as UI
+
+User -> UI : Write Message
+User -> UI : Click Format Button
+UI -> IF : Capture message content
+IF -> CC : Call handleFormatMessage
+CC -> CGAPI : Send message content for formatting
+CGAPI -> CC : Return formatted message
+CC -> IF : Update input field with formatted message
+IF -> UI : Display formatted message
+User -> UI : Click Send Button
+UI -> IF : Call sendMessage
+IF -> CC : sendMessage(message)
+
+@enduml

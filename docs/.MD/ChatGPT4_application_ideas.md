@@ -60,7 +60,7 @@ app.post('/api/formatMessage', async (req, res) => {
 });
 ```
 
---
+---
 
 ## 2. Summarizing Conversation
 
@@ -114,3 +114,58 @@ app.post('/api/summarizeConversation', async (req, res) => {
   res.json({ summary });
 });
 ```
+
+## 3. Chat with ChatAI
+
+![Chat with ChatAI](ChatAI.png)
+
+This feature allows users to directly chat with ChatAI, which has access to all messages, SMS, and emails in the conversation.
+
+### Frontend
+
+**ChatContext.jsx**
+
+We create a function handleChatWithAI that sends a message to the server and retrieves the AI's response.
+
+```
+const handleChatWithAI = useCallback(async (message) => {
+  try {
+    const response = await axios.post(`${URL}/api/chatWithAI`, { message, messages });
+    return response.data.response;
+  } catch (error) {
+    console.error("Error chatting with AI:", error);
+    return "Unable to get a response from AI.";
+  }
+}, [messages]);
+```
+
+**ChatUserList.jsx**
+
+We add an option in the user list to select "Chat with ChatAI".
+
+<li onClick={() => setActiveUser('ChatAI')}>Chat with ChatAI</li>
+
+**MessageContent.jsx**
+
+We handle the AI response within the message content. If the active user is ChatAI, we display the AI's response.
+
+```
+if (activeUser === 'ChatAI') {
+  const aiResponse = await handleChatWithAI(message);
+  setMessages((prevMessages) => [...prevMessages, { sender: 'AI', content: aiResponse }]);
+} else {
+  // Existing message sending logic
+}
+```
+
+### Backend
+
+**Route in Server**
+
+We create an endpoint /api/chatWithAI that handles the chat requests. This calls the ChatGPT API with the message and conversation history to get the AI's response.
+
+app.post('/api/chatWithAI', async (req, res) => {
+  const { message, messages } = req.body;
+  const aiResponse = await callChatGPTAPI(messages, 'chat', message);
+  res.json({ response: aiResponse });
+});

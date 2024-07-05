@@ -164,8 +164,10 @@ if (activeUser === 'ChatAI') {
 
 We create an endpoint /api/chatWithAI that handles the chat requests. This calls the ChatGPT API with the message and conversation history to get the AI's response.
 
+```
 app.post('/api/chatWithAI', async (req, res) => {
   const { message, messages } = req.body;
   const aiResponse = await callChatGPTAPI(messages, 'chat', message);
   res.json({ response: aiResponse });
 });
+```

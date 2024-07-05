@@ -1,0 +1,16 @@
+@startuml
+
+actor User
+entity ChatContext as CC
+entity ChatGPTAPI as CGAPI
+entity Navbar as NB
+entity UI as UI
+
+User -> NB : Input query and click Ask ChatAI button
+NB -> CC : Call handleSummarizeConversation(query)
+CC -> CGAPI : Send query and conversation data
+CGAPI -> CC : Return summary
+CC -> NB : Display summary in expandable box
+NB -> UI : Expand box to show summary
+
+@enduml

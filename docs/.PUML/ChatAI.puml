@@ -1,0 +1,17 @@
+@startuml
+
+actor User
+entity ChatContext as CC
+entity ChatGPTAPI as CGAPI
+entity ChatUserList as CUL
+entity UI as UI
+
+User -> CUL : Click Chat with ChatAI
+CUL -> UI : Open chat window with ChatAI
+User -> UI : Write message
+UI -> CC : Call handleChatWithAI(message)
+CC -> CGAPI : Send message and conversation data
+CGAPI -> CC : Return AI response
+CC -> UI : Display AI response in chat
+
+@enduml

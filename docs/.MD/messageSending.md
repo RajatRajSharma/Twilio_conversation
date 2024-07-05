@@ -1,4 +1,4 @@
-# Message Sending Flow with Hybrid Encryption
+# Message Sending Flow 
 
 This document provides a detailed explanation of the message sending process in our chat application, including encryption steps, function names, and file interactions.
 

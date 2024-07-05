@@ -143,7 +143,9 @@ const handleChatWithAI = useCallback(async (message) => {
 
 We add an option in the user list to select "Chat with ChatAI".
 
+```
 <li onClick={() => setActiveUser('ChatAI')}>Chat with ChatAI</li>
+```
 
 **MessageContent.jsx**
 

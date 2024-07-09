@@ -12,11 +12,10 @@
   "Response": "- **User1 Information:**\n  - Name: Rajat Raj Sharma\n  - Email: sharmarajatraj1@gmail.com\n  - Phone number: 7666374530\n  - IFSC number: 98765432110\n\n- **Project Details:**\n  - Project Name: Twilio_whatsapp on ChatGPT integration"
 }
 
-#### GET http://localhost:5000/api/AI/generateResponse?convoID=917666374530
-###### JSON : {
-######  "question": "Can you provide a summary of today's meeting?"
-###### }
-
+#### GET http://localhost:5000/api/AI/generateResponse
+##### JSON : {\n /n"question": "Can you provide a summary of today's meeting?"
+##### }
+- Thsi will give you answer to your query provided in body .
 # ChatApp Setup and Run Instructions
 ### node_module installation
 

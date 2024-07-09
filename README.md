@@ -13,10 +13,13 @@
 }
 
 #### GET http://localhost:5000/api/AI/generateResponse
-##### JSON : {
-#####"question": "Can you provide a summary of today's meeting?"
-##### }
-- Thsi will give you answer to your query provided in body .
+```
+{
+ "question": "Can you provide a summary of today's meeting?"
+}
+```
+- This will give you answer to your query provided in body .
+  
 # ChatApp Setup and Run Instructions
 ### node_module installation
 

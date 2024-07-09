@@ -17,7 +17,7 @@ export const useChatContext = () => useContext(ChatContext);
 const whatsapp = "14155238886";
 const sms = "447380300545";
 const mail = "neeraj.kumar@catura.co.uk";
-const URL = import.meta.env.VITE_API_URL;
+const URL = http://localhost:5000;  // import.meta.env.VITE_API_URL
 
 export const ChatProvider = ({ children }) => {
   const [listofUsers, setListofusers] = useState([]);

@@ -111,15 +111,18 @@ const ChatListComponent = () => {
     [listofUsers, unreadCount]
   );
 
-  const filteredUsers = useMemo(
-    () =>
-      sortedUsers.filter(
-        (user) =>
-          (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (user.caseId && user.caseId.toLowerCase().includes(searchTerm.toLowerCase()))
-      ),
-    [sortedUsers, searchTerm]
-  );
+  const filteredUsers = useMemo(() => {
+    console.log("sortedUsers:", sortedUsers);
+    return sortedUsers.filter((user) => {
+      if (!user.name || !user.caseId) {
+        console.error("Invalid user data:", user);
+      }
+      return (
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.caseId?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+  }, [sortedUsers, searchTerm]);
 
   return (
     <MemoizedChatList

@@ -1,4 +1,4 @@
-// user.controllers.js
+// api/controller/user.controllers.js
 
 import Conversation from "../../Models/chat.model.js";
 import axios from "axios";

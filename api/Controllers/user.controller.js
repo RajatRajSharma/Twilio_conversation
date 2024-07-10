@@ -4,11 +4,7 @@ import Conversation from "../../Models/chat.model.js";
 import axios from "axios";
 import { parseString } from "xml2js";
 import { promisify } from "util";
-import {
-  sendWhatsAppMessage,
-  sendSMSMessage,
-  sendEmailMessage,
-} from "../../Services/twilio.service.js";
+import { sendWhatsAppMessage, sendSMSMessage, sendEmailMessage } from "../../Services/twilio.service.js";
 import {
   generateAccountSASQueryParameters,
   AccountSASPermissions,
@@ -45,7 +41,7 @@ export const listofUsers = async (req, res) => {
     // Extract the CaseData array
     const caseDataArray =
       result["soap:Envelope"]["soap:Body"][0]["CallStoredProcedureResponse"][0][
-        "CallStoredProcedureResult"
+      "CallStoredProcedureResult"
       ][0]["CaseData"];
 
     // Format the data as required
@@ -108,12 +104,14 @@ export const sendMessage = async (req, res) => {
     }
     message["messageSid"] = response.messageSid;
     message["accountSid"] = response.accountSid;
-    if (type === "whatsapp") {
+    if (type === 'whatsapp') {
       data.messages.push(message);
-    } else if (type === "sms") {
+    }
+    else if (type === 'sms') {
       data.sms.push(message);
-    } else {
-      data.mails.push(message);
+    }
+    else {
+      data.mails.push(message)
     }
     await data.save();
     console.log("Data saved in mongo successfully");
@@ -129,7 +127,7 @@ export const sendMessage = async (req, res) => {
 
 export const getChatbyNumber = async (req, res) => {
   try {
-    console.log("GettingChat..");
+    console.log('GettingChat..');
     const { number, page = 1, limit = 20, type } = req.body; // page and limit for pagination
     const skip = (page - 1) * limit; // calculate the number of documents to skip
 
@@ -139,26 +137,38 @@ export const getChatbyNumber = async (req, res) => {
     if (data) {
       // Change for a new service
       let totalMessages;
-      if (type === "whatsapp") {
+      if (type === 'whatsapp') {
         totalMessages = data.messages.length;
         response.messages = data.messages
           .slice()
           .reverse()
           .slice(skip, skip + limit); // reverse and paginate
-      } else if (type === "sms") {
+      }
+      else if (type === 'sms') {
         totalMessages = data.sms.length;
         response.messages = data.sms
           .slice()
           .reverse()
           .slice(skip, skip + limit); // reverse and paginate
-      } else {
+      }
+      else if (type === 'mail') {
         totalMessages = data.mails.length;
         response.messages = data.mails
           .slice()
           .reverse()
           .slice(skip, skip + limit); // reverse and paginate
       }
+      else {
+        const error = new Error('Type is Invalid');
+        error.status = 400;
+        throw error;
+      }
       response.hasMore = skip + limit < totalMessages; // check if there are more messages to load
+    }
+    else {
+      const error = new Error('Data not found for the participant');
+      error.status = 400;
+      throw error;
     }
     res.status(200).json(response);
   } catch (error) {
@@ -171,18 +181,23 @@ export const getChatbyNumber = async (req, res) => {
 export const getUnreadcount = async (req, res) => {
   try {
     const service = req.query.service;
+
     console.log(service);
     const conversations = await Conversation.find({});
-    const unreadCountsArray = conversations.map((conv) => {
+    const unreadCountsArray = conversations.map(conv => {
       let unreadCount;
-      if (service === "sms") {
+      if (service === 'sms') {
         unreadCount = conv.unreadSms;
-      } else if (service === "mail") {
+      } else if (service === 'mail') {
         unreadCount = conv.unreadMails;
-      } else {
+      } else if (service === 'whatsapp') {
         unreadCount = conv.unreadCount;
       }
-      console.log(conv.participant);
+      else {
+        const error = new Error('Service query parameter is Invalid');
+        error.status = 400;
+        throw error;
+      }
       return {
         phone: conv.participant,
         unreadCount: unreadCount,
@@ -191,8 +206,8 @@ export const getUnreadcount = async (req, res) => {
 
     res.status(200).json(unreadCountsArray);
   } catch (error) {
-    console.error("Error fetching unread counts:", error);
-    res.status(500).json({ message: "Error fetching unread counts" });
+    console.error('Error fetching unread counts:');
+    res.status(500).json({ message: error.message });
   }
 };
 

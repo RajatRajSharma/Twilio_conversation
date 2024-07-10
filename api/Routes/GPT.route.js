@@ -2,18 +2,26 @@
 
 import express from "express";
 import {
-  getRelevantInfo,
-  getSummary,
-  generateResponse,
+    getRelevantInfo,
+    getSummary,
+    generateResponse,
 } from "../Controllers/GPT.controller.js";
 
 const router = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: AI
+ *   description: AI-related operations
+ */
+
+/**
+ * @swagger
  * /api/AI/getSummary:
  *   get:
  *     summary: Get summary of a conversation
+ *     tags : [AI]
  *     parameters:
  *       - in: query
  *         name: convoID
@@ -32,6 +40,7 @@ router.get("/getSummary", getSummary);
  * /api/AI/getRelevantInfo:
  *   get:
  *     summary: Get relevant information from a conversation
+ *     tags : [AI]
  *     parameters:
  *       - in: query
  *         name: convoID
@@ -50,6 +59,7 @@ router.get("/getRelevantInfo", getRelevantInfo);
  * /api/AI/generateResponse:
  *   post:
  *     summary: Generate a response for a given question
+ *     tags : [AI]
  *     requestBody:
  *       required: true
  *       content:

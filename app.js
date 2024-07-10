@@ -7,8 +7,9 @@ import http from "http";
 import { queueService } from "./Services/queue.service.js";
 import Conversation from "./Models/chat.model.js";
 import dotenv from "dotenv";
-import sgMail from "@sendgrid/mail";
 import getPhoneNumber from "./utils/emailService.js";
+import AIroute from "./api/Routes/GPT.route.js";
+import setupSwagger from "./swaggerConfig.js";
 
 dotenv.config();
 
@@ -22,8 +23,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Setup Swagger
+setupSwagger(app);
+
 // Routes
 app.use("/api/user", userRoute);
+app.use("/api/AI", AIroute);
 
 // Create HTTP server and initialize Socket.io
 const server = http.createServer(app);

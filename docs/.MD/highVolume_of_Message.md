@@ -1,3 +1,6 @@
+
+![Multi_user](multi_user.png)
+
 # High Throughput Messaging with Azure Functions and Service Bus
 
 This project focuses on handling high throughput messaging using Azure Functions and Azure Service Bus. Below, we outline the potential challenges, theoretical solutions, steps taken to implement those solutions, and key code snippets.

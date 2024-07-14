@@ -1,3 +1,5 @@
+// src/App.jsx
+
 import React, { useState } from "react";
 import WhatsAppClone from "./Components/WhatsappClone";
 import AccountSelection from "./Components/AccountSelection";

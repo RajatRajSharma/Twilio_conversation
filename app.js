@@ -1,3 +1,5 @@
+// app.js
+
 import express from "express";
 import cors from "cors";
 import connectDB from "./Config/databaseConnection.js";
@@ -10,6 +12,7 @@ import dotenv from "dotenv";
 import getPhoneNumber from "./utils/emailService.js";
 import AIroute from "./api/Routes/GPT.route.js";
 import setupSwagger from "./swaggerConfig.js";
+import SelectedUser from "./Models/SelectedUser.js";
 
 dotenv.config();
 
@@ -87,6 +90,7 @@ export { io };
 queueService.addMessageHandler(async (messageData) => {
   console.log("Processing message:", messageData);
   let from, to, phone;
+
   // For New service modify the sender and receiver here.
   if (messageData.type === "sms") {
     from = messageData.from.slice(1);
@@ -99,12 +103,15 @@ queueService.addMessageHandler(async (messageData) => {
     to = messageData.to;
     phone = getPhoneNumber(from, ListofUsers);
   }
+
   let unreadmsg = null;
+
   // Making a new conversation if the sender is new..
   try {
     let data = await Conversation.findOne({
       participant: messageData.type === "mail" ? phone : from,
     });
+
     if (!data) {
       data = new Conversation({
         participant: messageData.type === "mail" ? phone : from,
@@ -115,8 +122,9 @@ queueService.addMessageHandler(async (messageData) => {
         unreadSms: 0,
         unreadMails: 0,
       });
-      console.log("new Convo created Reciever side...");
+      console.log("New conversation created on receiver side...");
     }
+
     // Add your message processing logic here
     let timestamp = new Date(messageData.timestamp);
     const mongodbTimestamp = timestamp.toISOString().replace("Z", "+00:00");
@@ -130,6 +138,29 @@ queueService.addMessageHandler(async (messageData) => {
       contentLink = messageData.mediaItems[0].url;
     }
 
+    // Find agent details from SelectedUser collection if the message type is 'mail'
+    let handling_agent = {
+      agentUserId: "",
+      agentDisplayName: "",
+      CompanyId: "",
+    };
+
+    const selectedUser = await SelectedUser.findOne({
+      "selectedUsers.phoneNumber": from,
+    });
+
+    if (selectedUser) {
+      const selectedUserInfo = selectedUser.selectedUsers.find(
+        (user) => user.phoneNumber === from
+      );
+
+      if (selectedUserInfo) {
+        handling_agent.agentUserId = selectedUser.agentUserId;
+        handling_agent.agentDisplayName = selectedUser.agentDisplayName;
+        handling_agent.CompanyId = selectedUser.CompanyId;
+      }
+    }
+
     const newMessage = {
       sender_id: from,
       receiver_id: to,
@@ -141,85 +172,83 @@ queueService.addMessageHandler(async (messageData) => {
       timestamp: mongodbTimestamp,
       is_read: false,
       subject: messageData.subject,
+      handling_agent: handling_agent,
     };
 
-    // handle unreadMessage logic here...
-    console.log(currentUser);
-    if (messageData.type === "sms") {
-      console.log("in SMS");
-      if (currentUser !== null && currentUser.phoneNumber !== from) {
-        console.log("unreadSMS count increase..");
+    console.log("newMessage to be saved : ", newMessage);
 
+    // Handle unreadMessage logic here...
+    if (messageData.type === "sms") {
+      if (currentUser !== null && currentUser.phoneNumber !== from) {
         data.unreadSms += 1;
       }
       if (currentUser === null) {
-        console.log("unreadSMS count increase..");
-
         data.unreadSms += 1;
       }
     } else if (messageData.type === "whatsapp") {
-      console.log("in whatsapp");
       if (currentUser !== null && currentUser.phoneNumber !== from) {
-        console.log("unreadWhatsapp count increase..");
         data.unreadCount += 1;
       }
       if (currentUser === null) {
-        console.log("unreadWhatsapp count increase..");
         data.unreadCount += 1;
       }
     } else {
-      console.log("IN mail");
-      console.log("from : ", from);
+      // For mails
       if (currentUser !== null && currentUser.Email !== from) {
-        console.log("unreadMail count increase..");
         data.unreadMails += 1;
       }
       if (currentUser === null) {
-        console.log("unreadMail count increase..");
         data.unreadMails += 1;
       }
     }
+
     unreadmsg =
       messageData.type === "sms"
         ? data.unreadSms
         : messageData.type === "whatsapp"
         ? data.unreadCount
         : data.unreadMails;
-    // save data according to the message type here..
+
+    // Save data according to the message type here..
     if (messageData.type === "sms") {
       data.sms.push(newMessage);
     } else if (messageData.type === "whatsapp") {
       data.messages.push(newMessage);
     } else {
+      // For mails
       data.mails.push(newMessage);
     }
+
     await data.save();
-    console.log("successfully saved message on reciever side..");
+    console.log("Message successfully saved on receiver side.");
     console.log(
       "Processed message in our message model:",
       JSON.stringify(newMessage, null, 2)
     );
+
     // Handle the socket logic for different services here ..
     const SOCKET = connectedSockets.find((soc) => soc.Userid === to);
     if (!SOCKET) {
       return;
     }
-    if (messageData.type === "mail") {
-      if (currentUser !== null && from === currentUser.Email) {
-        io.to(SOCKET.socketId).emit("receiveMessage", newMessage);
-      }
-    } else {
-      if (currentUser !== null && from === currentUser.phoneNumber) {
-        io.to(SOCKET.socketId).emit("receiveMessage", newMessage);
-      }
+
+    if (
+      messageData.type === "mail" &&
+      currentUser !== null &&
+      from === currentUser.Email
+    ) {
+      io.to(SOCKET.socketId).emit("receiveMessage", newMessage);
+    } else if (currentUser !== null && from === currentUser.phoneNumber) {
+      io.to(SOCKET.socketId).emit("receiveMessage", newMessage);
     }
+
     io.to(SOCKET.socketId).emit("unreadMessages", {
       newMessage,
       unreadmsg,
       ListofUsers,
     });
   } catch (error) {
-    console.log("Error in storing message in reciever side", error.message);
+    console.log("Error in storing message on receiver side:", error.message);
   }
 });
 

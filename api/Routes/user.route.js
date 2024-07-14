@@ -1,20 +1,178 @@
-// user.routes.js
+// api/Routes/user.routes.js
 
 import express from "express";
 import {
-    listofUsers,
-    sendMessage,
-    getChatbyNumber,
-    getUnreadcount,
-    generateSasurl,
+  listofUsers,
+  sendMessage,
+  getChatbyNumber,
+  getUnreadcount,
+  generateSasurl,
+  addSelectedUser,
+  removeSelectedUser,
+  getSelectedUsers,
 } from "../Controllers/user.controller.js";
 
 const router = express.Router();
+
+router.post("/addSelectedUser", addSelectedUser);
+/**
+ * @swagger
+ * /api/user/addSelectedUser:
+ *   post:
+ *     summary: Add a selected user
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - agentUserId
+ *               - selectedUser
+ *             properties:
+ *               agentUserId:
+ *                 type: integer
+ *                 example: 45518
+ *               selectedUser:
+ *                 type: object
+ *                 required:
+ *                   - name
+ *                   - emailAddress
+ *                   - phoneNumber
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                     example: John Doe
+ *                   emailAddress:
+ *                     type: string
+ *                     example: johndoe@example.com
+ *                   phoneNumber:
+ *                     type: string
+ *                     example: 918851144028
+ *     responses:
+ *       200:
+ *         description: User added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User added successfully
+ *                 agent:
+ *                   $ref: '#/components/schemas/Agent'
+ *       500:
+ *         description: Error adding user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error adding user
+ *                 error:
+ *                   type: object
+ */
+
+router.post("/removeSelectedUser", removeSelectedUser);
+/**
+ * @swagger
+ * /api/user/removeSelectedUser:
+ *   post:
+ *     summary: Remove a selected user
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - agentUserId
+ *               - selectedUser
+ *             properties:
+ *               agentUserId:
+ *                 type: integer
+ *                 example: 45518
+ *               selectedUser:
+ *                 type: object
+ *                 required:
+ *                   - phoneNumber
+ *                 properties:
+ *                   phoneNumber:
+ *                     type: string
+ *                     example: 918851144028
+ *     responses:
+ *       200:
+ *         description: User removed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User removed successfully
+ *                 agent:
+ *                   $ref: '#/components/schemas/Agent'
+ *       500:
+ *         description: Error removing user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error removing user
+ *                 error:
+ *                   type: object
+ */
+
+router.get("/getSelectedUsers", getSelectedUsers);
+/**
+ * @swagger
+ * /api/user/getSelectedUsers:
+ *   get:
+ *     summary: Get selected users
+ *     tags: [User]
+ *     responses:
+ *       200:
+ *         description: A list of selected users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Agent'
+ *       500:
+ *         description: Error fetching selected users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error fetching selected users
+ */
 
 /**
  * @swagger
  * components:
  *   schemas:
+ *     Agent:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *         emailAddress:
+ *           type: string
+ *         phoneNumber:
+ *           type: string
  *     Message:
  *       type: object
  *       required:
@@ -58,7 +216,6 @@ const router = express.Router();
  *   name: User
  *   description: User management and messaging operations
  */
-
 
 /**
  * @swagger
@@ -198,20 +355,3 @@ router.get("/getUnreadcount", getUnreadcount);
 router.get("/getSasurl", generateSasurl);
 
 export default router;
-
-// import express from 'express';
-// import { listofUsers, sendMessage, getChatbyNumber, getUnreadcount, generateSasurl } from '../Controllers/user.controller.js';
-
-// const router = express.Router();
-
-// // Give the list of users
-// router.get('/listofUsers', listofUsers);
-// // Going to send a message to twilio
-// router.post('/sendMessage', sendMessage);
-// // Going to send previous messages as response
-// router.post('/getchatbyNumber', getChatbyNumber);
-// // Going to get message Unread Count
-// router.get('/getUnreadcount', getUnreadcount);
-// // Going to get a unique blob url
-// router.get('/getSasurl', generateSasurl);
-// export default router;

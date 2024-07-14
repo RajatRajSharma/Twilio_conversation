@@ -1,8 +1,23 @@
-import WhatsAppClone from './Components/WhatsappClone'
+import React, { useState } from "react";
+import WhatsAppClone from "./Components/WhatsappClone";
+import AccountSelection from "./Components/AccountSelection";
 
 function App() {
+  const [selectedAccount, setSelectedAccount] = useState(null);
+
+  const handleSelectAccount = (account) => {
+    setSelectedAccount(account);
+  };
+
   return (
-    <WhatsAppClone />
-  )
+    <div>
+      {selectedAccount ? (
+        <WhatsAppClone account={selectedAccount} />
+      ) : (
+        <AccountSelection onSelectAccount={handleSelectAccount} />
+      )}
+    </div>
+  );
 }
-export default App
+
+export default App;

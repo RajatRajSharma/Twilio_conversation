@@ -1,4 +1,4 @@
-// app.js
+// app.js - add message to queue
 
 import express from "express";
 import cors from "cors";

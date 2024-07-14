@@ -3,7 +3,7 @@
 import mongoose from "mongoose";
 
 const SelectedUserSchema = new mongoose.Schema({
-  agentUserId: { type: Number, required: true }, // UserID of the agent (same as userID)
+  agentUserId: { type: Number, required: true }, 
   CompanyId: { type: Number, required: true },
   agentDisplayName: { type: String, required: true },
   selectedUsers: [

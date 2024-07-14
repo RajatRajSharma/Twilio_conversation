@@ -1,3 +1,5 @@
+// src/Context/ChatContext.jsx
+
 import React, {
   createContext,
   useState,
@@ -12,14 +14,13 @@ import io from "socket.io-client";
 import { BlobServiceClient } from "@azure/storage-blob";
 
 const ChatContext = createContext();
-export const useChatContext = () => useContext(ChatContext);
 
 const whatsapp = "14155238886";
 const sms = "447380300545";
 const mail = "neeraj.kumar@catura.co.uk";
-const URL = http://localhost:5000;  // import.meta.env.VITE_API_URL
+const URL = "http://localhost:5000"; // import.meta.env.VITE_API_URL
 
-export const ChatProvider = ({ children }) => {
+export const ChatProvider = ({ children, account }) => {
   const [listofUsers, setListofusers] = useState([]);
   const [currentUser, setCurrentuser] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -33,6 +34,7 @@ export const ChatProvider = ({ children }) => {
   const [unreadCount, setUnreadcount] = useState([]);
   const [media, setMedia] = useState({ contentType: null, contentLink: null });
   const [activeService, setActiveService] = useState("whatsapp");
+  const [selectedUserPhones, setSelectedUserPhones] = useState([]);
 
   const scrollToNewMessage = useCallback(() => {
     const scrollableDiv = document.getElementById("scrollableDiv");
@@ -189,7 +191,8 @@ export const ChatProvider = ({ children }) => {
 
   const loadChat = useCallback(
     async (chat) => {
-      console.log(chat);
+      console.log("Loading chat of : ", chat);
+      console.log("Loading chat of Phone no. : ", chat.phoneNumber);
       console.log(unreadCount);
       setCurrentuser(chat);
       socketRef.current.emit("changeUser", { chat });
@@ -277,6 +280,11 @@ export const ChatProvider = ({ children }) => {
           timestamp: new Date(),
           is_read: false,
           subject: subject,
+          handling_agent: {
+            agentUserId: account.userId,
+            agentDisplayName: account.displayName,
+            CompanyId: account.CompanyId,
+          },
         };
 
         setMessages((prevMessages) => [newMessage, ...prevMessages]);
@@ -295,7 +303,7 @@ export const ChatProvider = ({ children }) => {
         }
       }
     },
-    [currentUser, media, activeService, vendorNumber]
+    [currentUser, media, activeService, vendorNumber, account]
   );
 
   const handleServiceChange = useCallback(
@@ -365,12 +373,16 @@ export const ChatProvider = ({ children }) => {
       loadChat,
       sendMessage,
       handleCloseExpandedMedia,
+      selectedUserPhones,
+      setSelectedUserPhones,
     }),
     [
       handleServiceChange,
       loadMoreMessages,
       handleFileSelect,
       handleMediaClick,
+      selectedUserPhones,
+      setSelectedUserPhones,
       listofUsers,
       currentUser,
       messages,
@@ -391,3 +403,5 @@ export const ChatProvider = ({ children }) => {
   );
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };
+
+export const useChatContext = () => useContext(ChatContext);

@@ -1,24 +1,30 @@
 // src/components/WhatsAppClone.jsx
+
+import React, { useState } from "react";
+import { ChatProvider } from "../Context/ChatContext";
 import { useChatContext } from "../Context/ChatContext";
-import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import LoadingBar from "react-top-loading-bar";
-import { Root, Sidebar, SidebarHeader, ChatArea, ChatHeader, Messages } from "./Styles/StyledComponent";
+import {
+  Root,
+  Sidebar,
+  SidebarHeader,
+  ChatArea,
+  ChatHeader,
+  Messages,
+} from "./Styles/StyledComponent";
 import SearchBarComponent from "./Shared/SearchBarComponent";
-import ChatListComponent from "./ChatListComponent"
-import MessageList from "./MessageList"
+import ChatListComponent from "./ChatListComponent";
+import MessageList from "./MessageList";
 import InputField from "./Shared/InputField";
 import ExpandedMediaView from "./Shared/ExpandedMedia";
-import MemoizedToolbar from "./Shared/toolbar"
+import MemoizedToolbar from "./Shared/toolbar.jsx";
+import { Toolbar, Typography, Avatar, Button } from "@mui/material";
+import axios from "axios";
 
-import {
-  Toolbar,
-  Typography,
-  Avatar,
-  Button,
-} from "@mui/material";
+const URL = "http://localhost:5000"; // Replace with your API URL
 
-export default function WhatsAppClone() {
+const WhatsAppCloneContent = ({ account }) => {
   const {
     handleServiceChange,
     loadMoreMessages,
@@ -28,13 +34,68 @@ export default function WhatsAppClone() {
     hasMore,
     progress,
     activeService,
-    handleCloseExpandedMedia } = useChatContext();
+    handleCloseExpandedMedia,
+    selectedUserPhones,
+    setSelectedUserPhones,
+    sendMessage,
+  } = useChatContext();
 
+  const [refreshChatList, setRefreshChatList] = useState(false);
+
+  const toggleRefreshChatList = () => {
+    setRefreshChatList((prev) => !prev);
+  };
+
+  const addSelectedUser = () => {
+    console.log("Adding selected user:", currentUser);
+    console.log("current agent userID :", account.userId);
+
+    const data = {
+      agentUserId: account.userId,
+      selectedUser: {
+        name: currentUser.name,
+        emailAddress: currentUser.Email,
+        phoneNumber: currentUser.phoneNumber,
+      },
+    };
+
+    console.log("Data being sent:", data);
+
+    axios
+      .post(`${URL}/api/user/addSelectedUser`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log("User added successfully");
+        toggleRefreshChatList();
+      })
+      .catch((error) => {
+        console.error("Error adding user:", error.response.data);
+      });
+  };
+
+  const removeSelectedUser = () => {
+    axios
+      .post(`${URL}/api/user/removeSelectedUser`, {
+        agentUserId: account.userId,
+        selectedUser: {
+          phoneNumber: currentUser.phoneNumber,
+        },
+      })
+      .then((response) => {
+        console.log("User removed successfully");
+        toggleRefreshChatList();
+      })
+      .catch((error) => console.error(error));
+  };
 
   return (
     <Root>
       <LoadingBar color="#f11946" progress={progress} height={4} />
       <Sidebar>
+        <h2>Welcome, {account.displayName}</h2>
         <SidebarHeader position="static">
           <MemoizedToolbar
             handleServiceChange={handleServiceChange}
@@ -42,15 +103,35 @@ export default function WhatsAppClone() {
           />
         </SidebarHeader>
         <SearchBarComponent />
-        <ChatListComponent />
+        <ChatListComponent
+          userId={account.userId}
+          refreshChatList={refreshChatList}
+        />
       </Sidebar>
-      <ChatArea >
+      <ChatArea>
         {currentUser ? (
           <>
             <ChatHeader position="static">
               <Toolbar>
                 <Avatar sx={{ mr: 2 }}>{currentUser.name.charAt(0)}</Avatar>
                 <Typography variant="h6">{currentUser.name}</Typography>
+                {selectedUserPhones.includes(currentUser.phoneNumber) ? (
+                  <Button
+                    color="error"
+                    onClick={removeSelectedUser}
+                    style={{ marginLeft: "auto" }}
+                  >
+                    Client's Task Done
+                  </Button>
+                ) : (
+                  <Button
+                    color="primary"
+                    onClick={addSelectedUser}
+                    style={{ marginLeft: "auto" }}
+                  >
+                    Select Client
+                  </Button>
+                )}
               </Toolbar>
             </ChatHeader>
             <Messages
@@ -100,5 +181,13 @@ export default function WhatsAppClone() {
         />
       )}
     </Root>
+  );
+};
+
+export default function WhatsAppClone({ account }) {
+  return (
+    <ChatProvider account={account}>
+      <WhatsAppCloneContent account={account} />
+    </ChatProvider>
   );
 }

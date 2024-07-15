@@ -2,6 +2,7 @@
 
 import Conversation from "../../Models/chat.model.js";
 import SelectedUser from "../../Models/SelectedUser.js";
+import { io } from "../../app.js";
 import axios from "axios";
 import { parseString } from "xml2js";
 import { promisify } from "util";
@@ -50,6 +51,7 @@ export const addSelectedUser = async (req, res) => {
     agent.selectedUsers.push(selectedUser);
     await agent.save();
 
+    io.emit("listUpdated", { agentUserId, selectedUser, action: "add" });
     res.status(200).json({ message: "User added successfully", agent });
   } catch (error) {
     console.error("Error in addSelectedUser:", error);
@@ -73,6 +75,7 @@ export const removeSelectedUser = async (req, res) => {
 
     await agent.save();
 
+    io.emit("listUpdated", { agentUserId, selectedUser, action: "remove" });
     res.status(200).json({ message: "User removed successfully", agent });
   } catch (error) {
     res.status(500).json({ message: "Error removing user", error });

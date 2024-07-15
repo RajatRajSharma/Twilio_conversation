@@ -1,6 +1,7 @@
 // src/components/WhatsAppClone.jsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
 import { ChatProvider } from "../Context/ChatContext";
 import { useChatContext } from "../Context/ChatContext";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -24,6 +25,8 @@ import axios from "axios";
 
 const URL = "http://localhost:5000"; // Replace with your API URL
 
+const socket = io(URL);
+
 const WhatsAppCloneContent = ({ account }) => {
   const {
     handleServiceChange,
@@ -46,6 +49,17 @@ const WhatsAppCloneContent = ({ account }) => {
     setRefreshChatList((prev) => !prev);
   };
 
+  useEffect(() => {
+    socket.on("listUpdated", (data) => {
+      console.log("List updated:", data);
+      setRefreshChatList((prev) => !prev);
+    });
+
+    return () => {
+      socket.off("listUpdated");
+    };
+  }, []);
+
   const addSelectedUser = () => {
     console.log("Adding selected user:", currentUser);
     console.log("current agent userID :", account.userId);
@@ -58,7 +72,6 @@ const WhatsAppCloneContent = ({ account }) => {
         phoneNumber: currentUser.phoneNumber,
       },
     };
-
     console.log("Data being sent:", data);
 
     axios
@@ -76,7 +89,7 @@ const WhatsAppCloneContent = ({ account }) => {
       });
   };
 
-  const removeSelectedUser = () => {
+  const removeSelectedUser = async (req, res) => {
     axios
       .post(`${URL}/api/user/removeSelectedUser`, {
         agentUserId: account.userId,

@@ -1,4 +1,4 @@
-// app.js - add message to queue
+// app.js
 
 import express from "express";
 import cors from "cors";
@@ -75,6 +75,9 @@ io.on("connection", (socket) => {
   });
   socket.on("NewUsers", (list) => {
     ListofUsers = list;
+  });
+  socket.on("updateList", async (data) => {
+    io.emit("listUpdated", data);
   });
   socket.on("disconnect", () => {
     connectedSockets = connectedSockets.filter(

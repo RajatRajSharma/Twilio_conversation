@@ -215,6 +215,11 @@
 - **`disconnect`**: Handles user disconnection and removes the socket ID from the list of connected sockets.
 - **`receiveMessage`**: Handles incoming messages and updates the chat.
 - **`unreadMessages`**: Handles unread messages and updates the unread message count.
-- **`listUpdated`**: List is updated by function "addSelectedUser" & "removeSelectedUser" and these function comes into play when we try to add or remove a unselected users .
+- **`listUpdated`**: List is updated by function "addSelectedUser" & "removeSelectedUser" and these function comes into play when we try to add or remove a unselected users . These steps are taken in user.controller.js under above function like:
+   - ```javascript
+     io.emit("listUpdated", { agentUserId, selectedUser, action: "add" });
+     OR
+     io.emit("listUpdated", { agentUserId, selectedUser, action: "remove" });
+     ``` 
 
 These socket events are integral to the real-time functionality of your chat application, enabling features like live message updates, user switching, and unread message tracking.

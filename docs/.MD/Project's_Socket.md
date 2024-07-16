@@ -56,7 +56,16 @@
      });
      ```
 
-5. **Disconnect Event**
+5. **UpdateList Event**
+   - **Purpose**: Updates the list of selected users in real-time.
+   - **Functionality**: Emits a listUpdated event with the updated data.
+   - ```javascript
+     socket.on("updateList", async (data) => {
+        io.emit("listUpdated", data);
+      });
+     ```
+
+6. **Disconnect Event**
    - **Purpose**: To handle user disconnection.
    - **Functionality**: When a user disconnects, their socket ID is removed from the list of connected sockets.
    - ```javascript
@@ -172,7 +181,23 @@
      socketRef.current.emit("NewUsers", response.data);
      ```
 
-7. **Socket Disconnect**
+7. **ListUpdated Event**
+   - **Purpose**: Handles updates to the list of selected users in real-time.
+   - **Functionality**: Updates the chat list when a listUpdated event is received.
+   - ```javascript
+     useEffect(() => {
+        socket.on("listUpdated", (data) => {
+          console.log("List updated:", data);
+          setRefreshChatList((prev) => !prev);
+        });
+      
+        return () => {
+          socket.off("listUpdated");
+        };
+      }, []);
+     ```
+
+8. **Socket Disconnect**
    - **Purpose**: To disconnect the socket connection.
    - **Functionality**: This disconnects the socket connection when the component is unmounted.
    - ```javascript
@@ -190,5 +215,6 @@
 - **`disconnect`**: Handles user disconnection and removes the socket ID from the list of connected sockets.
 - **`receiveMessage`**: Handles incoming messages and updates the chat.
 - **`unreadMessages`**: Handles unread messages and updates the unread message count.
+- **`listUpdated`**: List is updated by function "addSelectedUser" & "removeSelectedUser" and these function comes into play when we try to add or remove a unselected users .
 
 These socket events are integral to the real-time functionality of your chat application, enabling features like live message updates, user switching, and unread message tracking.
